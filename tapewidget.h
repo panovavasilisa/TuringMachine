@@ -5,8 +5,7 @@
 #include <QVector>
 #include <QString>
 
-class TapeWidget : public QWidget
-{
+class TapeWidget : public QWidget {
     Q_OBJECT
 public:
     explicit TapeWidget(QWidget *parent = nullptr);

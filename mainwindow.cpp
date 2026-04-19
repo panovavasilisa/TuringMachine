@@ -6,16 +6,47 @@
 #include <QDebug>
 
 MainWindow::MainWindow(const QString &alphabet, const QString &extraAlphabet, QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
-    , m_alphabet(alphabet)
-    , m_extraAlphabet(extraAlphabet)
-    , m_headPos(0) {
+    : QMainWindow(parent), ui(new Ui::MainWindow), m_alphabet(alphabet)
+    , m_extraAlphabet(extraAlphabet), m_headPos(0) {
     ui->setupUi(this);
+
+    this->setStyleSheet("QMainWindow { background-color: #c0e0ff; }");
+
+
     tapeWidget = ui->tapeWidget;
+
     setupTable();
+
+    // Очищаем ленту
     m_tape.clear();
     tapeWidget->setTape(m_tape, m_headPos);
+
+
+    ui->tableProgram->setAlternatingRowColors(false);
+    ui->tableProgram->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->tableProgram->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->tableProgram->setStyleSheet(
+        "QTableWidget { background-color: white; }"
+        "QTableWidget::item { background-color: white; }"
+        "QTableWidget::item:selected { background-color: white; }"
+        "QTableWidget::item:hover { background-color: white; }"
+        "QHeaderView::section { background-color: white; }"
+        );
+    QPalette pal = ui->tableProgram->palette();
+    pal.setColor(QPalette::Base, Qt::white);
+    pal.setColor(QPalette::AlternateBase, Qt::white);
+    pal.setColor(QPalette::Highlight, Qt::white);
+    ui->tableProgram->setPalette(pal);
+
+    //иконки на кнопки
+    ui->btnRun->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
+    ui->btnStop->setIcon(style()->standardIcon(QStyle::SP_MediaStop));
+    ui->btnStep->setIcon(style()->standardIcon(QStyle::SP_MediaSkipForward));
+    ui->btnReset->setIcon(style()->standardIcon(QStyle::SP_BrowserReload));
+    ui->btnRun->setIconSize(QSize(24, 24));
+    ui->btnStop->setIconSize(QSize(24, 24));
+    ui->btnStep->setIconSize(QSize(24, 24));
+    ui->btnReset->setIconSize(QSize(24, 24));
 }
 
 MainWindow::~MainWindow() {
