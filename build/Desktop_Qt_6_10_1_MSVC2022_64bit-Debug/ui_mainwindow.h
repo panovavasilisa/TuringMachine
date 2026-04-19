@@ -46,6 +46,7 @@ public:
     TapeWidget *tapeWidget;
     QPushButton *btnAddState;
     QPushButton *btnRemoveState;
+    QPushButton *btnInsertEmpty;
     QMenuBar *menubar;
     QStatusBar *statusbar;
 
@@ -115,6 +116,9 @@ public:
         btnRemoveState = new QPushButton(centralwidget);
         btnRemoveState->setObjectName("btnRemoveState");
         btnRemoveState->setGeometry(QRect(50, 340, 21, 18));
+        btnInsertEmpty = new QPushButton(centralwidget);
+        btnInsertEmpty->setObjectName("btnInsertEmpty");
+        btnInsertEmpty->setGeometry(QRect(110, 340, 71, 18));
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName("menubar");
@@ -142,6 +146,7 @@ public:
         btnReset->setText(QString());
         btnAddState->setText(QCoreApplication::translate("MainWindow", "+", nullptr));
         btnRemoveState->setText(QCoreApplication::translate("MainWindow", "-", nullptr));
+        btnInsertEmpty->setText(QCoreApplication::translate("MainWindow", "\320\222\321\201\321\202\320\260\320\262\320\270\321\202\321\214 \316\233", nullptr));
     } // retranslateUi
 
 };

@@ -595,6 +595,9 @@ release\moc_mainwindow.cpp: ..\..\mainwindow.h \
 		C:\QT\6.10.1\msvc2022_64\include\QtCore\QVector \
 		C:\QT\6.10.1\msvc2022_64\include\QtCore\qvector.h \
 		C:\QT\6.10.1\msvc2022_64\include\QtCore\QString \
+		C:\QT\6.10.1\msvc2022_64\include\QtCore\QMap \
+		C:\QT\6.10.1\msvc2022_64\include\QtCore\QTimer \
+		C:\QT\6.10.1\msvc2022_64\include\QtCore\qtimer.h \
 		release\moc_predefs.h \
 		C:\QT\6.10.1\msvc2022_64\bin\moc.exe
 	C:\QT\6.10.1\msvc2022_64\bin\moc.exe $(DEFINES) --compiler-flavor=msvc --include C:/C++/QT_Projects/MT1/build/Desktop_Qt_6_10_1_MSVC2022_64bit-Debug/release/moc_predefs.h -IC:/QT/6.10.1/msvc2022_64/mkspecs/win32-msvc -IC:/C++/QT_Projects/MT1 -IC:/QT/6.10.1/msvc2022_64/include -IC:/QT/6.10.1/msvc2022_64/include/QtWidgets -IC:/QT/6.10.1/msvc2022_64/include/QtGui -IC:/QT/6.10.1/msvc2022_64/include/QtCore -I. -I"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include" -I"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\ATLMFC\include" -I"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\VS\include" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\um" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\shared" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\winrt" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\cppwinrt" -I"C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8\include\um" ..\..\mainwindow.h -o release\moc_mainwindow.cpp
@@ -800,7 +803,6 @@ release\moc_tapewidget.cpp: ..\..\tapewidget.h \
 		C:\QT\6.10.1\msvc2022_64\include\QtGui\qguiapplication_platform.h \
 		C:\QT\6.10.1\msvc2022_64\include\QtCore\QVector \
 		C:\QT\6.10.1\msvc2022_64\include\QtCore\qvector.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtCore\QString \
 		release\moc_predefs.h \
 		C:\QT\6.10.1\msvc2022_64\bin\moc.exe
 	C:\QT\6.10.1\msvc2022_64\bin\moc.exe $(DEFINES) --compiler-flavor=msvc --include C:/C++/QT_Projects/MT1/build/Desktop_Qt_6_10_1_MSVC2022_64bit-Debug/release/moc_predefs.h -IC:/QT/6.10.1/msvc2022_64/mkspecs/win32-msvc -IC:/C++/QT_Projects/MT1 -IC:/QT/6.10.1/msvc2022_64/include -IC:/QT/6.10.1/msvc2022_64/include/QtWidgets -IC:/QT/6.10.1/msvc2022_64/include/QtGui -IC:/QT/6.10.1/msvc2022_64/include/QtCore -I. -I"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include" -I"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\ATLMFC\include" -I"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\VS\include" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\um" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\shared" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\winrt" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\cppwinrt" -I"C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8\include\um" ..\..\tapewidget.h -o release\moc_tapewidget.cpp
@@ -1018,8 +1020,7 @@ ui_mainwindow.h: ..\..\mainwindow.ui \
 		C:\QT\6.10.1\msvc2022_64\include\QtCore\qlocale.h \
 		C:\QT\6.10.1\msvc2022_64\include\QtGui\qguiapplication_platform.h \
 		C:\QT\6.10.1\msvc2022_64\include\QtCore\QVector \
-		C:\QT\6.10.1\msvc2022_64\include\QtCore\qvector.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtCore\QString
+		C:\QT\6.10.1\msvc2022_64\include\QtCore\qvector.h
 	C:\QT\6.10.1\msvc2022_64\bin\uic.exe ..\..\mainwindow.ui -o ui_mainwindow.h
 
 compiler_yacc_decl_make_all:
@@ -1234,27 +1235,7 @@ release\gettingalphabet.obj: ..\..\gettingalphabet.cpp ..\..\gettingalphabet.h \
 		C:\QT\6.10.1\msvc2022_64\include\QtGui\qinputmethod.h \
 		C:\QT\6.10.1\msvc2022_64\include\QtCore\qlocale.h \
 		C:\QT\6.10.1\msvc2022_64\include\QtGui\qguiapplication_platform.h \
-		ui_gettingalphabet.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtCore\QVariant \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\QAbstractButton \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qabstractbutton.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\QApplication \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qapplication.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\QDialogButtonBox \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qdialogbuttonbox.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\QLabel \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qlabel.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qframe.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtGui\qpicture.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtGui\qtextdocument.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\QLineEdit \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qlineedit.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtGui\qtextcursor.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtGui\qtextformat.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtGui\qpen.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtGui\qtextoption.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\QPushButton \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qpushbutton.h
+		ui_gettingalphabet.h
 
 release\main.obj: ..\..\main.cpp ..\..\gettingalphabet.h \
 		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\QDialog \
@@ -1463,6 +1444,9 @@ release\main.obj: ..\..\main.cpp ..\..\gettingalphabet.h \
 		C:\QT\6.10.1\msvc2022_64\include\QtCore\QVector \
 		C:\QT\6.10.1\msvc2022_64\include\QtCore\qvector.h \
 		C:\QT\6.10.1\msvc2022_64\include\QtCore\QString \
+		C:\QT\6.10.1\msvc2022_64\include\QtCore\QMap \
+		C:\QT\6.10.1\msvc2022_64\include\QtCore\QTimer \
+		C:\QT\6.10.1\msvc2022_64\include\QtCore\qtimer.h \
 		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\QApplication \
 		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qapplication.h
 
@@ -1670,63 +1654,21 @@ release\mainwindow.obj: ..\..\mainwindow.cpp ..\..\mainwindow.h \
 		C:\QT\6.10.1\msvc2022_64\include\QtCore\QVector \
 		C:\QT\6.10.1\msvc2022_64\include\QtCore\qvector.h \
 		C:\QT\6.10.1\msvc2022_64\include\QtCore\QString \
+		C:\QT\6.10.1\msvc2022_64\include\QtCore\QMap \
+		C:\QT\6.10.1\msvc2022_64\include\QtCore\QTimer \
+		C:\QT\6.10.1\msvc2022_64\include\QtCore\qtimer.h \
 		ui_mainwindow.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtCore\QVariant \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\QApplication \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qapplication.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\QHBoxLayout \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qboxlayout.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qlayout.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qlayoutitem.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qgridlayout.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\QHeaderView \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qheaderview.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qabstractitemview.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qabstractscrollarea.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qframe.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtCore\qabstractitemmodel.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtCore\qitemselectionmodel.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qabstractitemdelegate.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qstyleoption.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qabstractspinbox.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtGui\qvalidator.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtCore\qregularexpression.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qslider.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qabstractslider.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qstyle.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qtabbar.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qrubberband.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\QLabel \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qlabel.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtGui\qpicture.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtGui\qtextdocument.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\QLineEdit \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qlineedit.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtGui\qtextcursor.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtGui\qtextformat.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtGui\qpen.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtGui\qtextoption.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\QMenuBar \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qmenubar.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qmenu.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\QPushButton \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qpushbutton.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qabstractbutton.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\QSlider \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\QStatusBar \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qstatusbar.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\QTableWidget \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qtablewidget.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qtableview.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\QWidget \
 		..\..\tapewidget.h \
+		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\QWidget \
 		..\..\gettingalphabet.h \
 		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\QDialog \
 		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qdialog.h \
 		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\QMessageBox \
 		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qmessagebox.h \
 		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qdialogbuttonbox.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtCore\QDebug
+		C:\QT\6.10.1\msvc2022_64\include\QtCore\QDebug \
+		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\QStyle \
+		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qstyle.h
 
 release\tapewidget.obj: ..\..\tapewidget.cpp ..\..\tapewidget.h \
 		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\QWidget \
@@ -1929,7 +1871,6 @@ release\tapewidget.obj: ..\..\tapewidget.cpp ..\..\tapewidget.h \
 		C:\QT\6.10.1\msvc2022_64\include\QtGui\qguiapplication_platform.h \
 		C:\QT\6.10.1\msvc2022_64\include\QtCore\QVector \
 		C:\QT\6.10.1\msvc2022_64\include\QtCore\qvector.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtCore\QString \
 		C:\QT\6.10.1\msvc2022_64\include\QtGui\QPainter \
 		C:\QT\6.10.1\msvc2022_64\include\QtGui\qpainter.h \
 		C:\QT\6.10.1\msvc2022_64\include\QtGui\qtextoption.h \

@@ -39,7 +39,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Задавть алфавиты :</string>
+    <string>Задать алфавиты :</string>
    </property>
   </widget>
   <widget class="QLineEdit" name="lineEditAlphabet">
