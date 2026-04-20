@@ -9,19 +9,18 @@ class TapeWidget : public QWidget {
 public:
     explicit TapeWidget(QWidget *parent = nullptr);
     void setTape(const QVector<QString> &left, const QVector<QString> &right, int headPos);
-    void setCellSize(int size = 60);
-    void updateHeadPosition(int headPos); // если нужно обновить только позицию
-    void scrollToMakeHeadVisible();       // принудительно сдвинуть, чтобы головка была видна
+    void setCellSize(int size = 30);
 
 protected:
     void paintEvent(QPaintEvent *event) override;
 
 private:
-    QVector<QString> m_left;   // слева от головки (обратный порядок)
-    QVector<QString> m_right;  // справа, включая головку
-    int m_headAbsPos;          // абсолютная позиция головки (количество символов слева)
+    QVector<QString> m_left;
+    QVector<QString> m_right;
+    int m_headPos;
     int m_cellSize;
-    int m_offset;              // индекс первого отображаемого символа в полной ленте
+    int m_offset;
+    void scrollToMakeHeadVisible();
 };
 
 #endif // TAPEWIDGET_H

@@ -2,10 +2,9 @@
 #include "ui_gettingalphabet.h"
 
 GettingAlphabet::GettingAlphabet(QWidget *parent)
-    : QDialog(parent)
-    , ui(new Ui::GettingAlphabet) {
+    : QDialog(parent), ui(new Ui::GettingAlphabet) {
     ui->setupUi(this);
-    this->setStyleSheet("background-color: #f0f0f0;");
+    this->setStyleSheet("background-color: #c0e0ff;");
 }
 
 GettingAlphabet::~GettingAlphabet() {

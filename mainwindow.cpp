@@ -16,7 +16,7 @@ MainWindow::MainWindow(const QString &alphabet, const QString &extraAlphabet, QW
 
     m_timer = new QTimer(this);
     connect(m_timer, &QTimer::timeout, this, &MainWindow::step);
-    m_delayMs = 500;   // задержка 500 мс
+    m_delayMs = 500;
     if (ui->Speed) {
         ui->Speed->setValue(m_delayMs);
         connect(ui->Speed, &QSlider::valueChanged, this, &MainWindow::on_Speed_valueChanged);
@@ -29,13 +29,6 @@ MainWindow::MainWindow(const QString &alphabet, const QString &extraAlphabet, QW
     setupTable();
 
     m_currentState = "q0";
-    m_timer = new QTimer(this);
-    connect(m_timer, &QTimer::timeout, this, &MainWindow::step);
-    m_delayMs = 500;
-    if (ui->Speed) {
-        ui->Speed->setValue(m_delayMs);
-        connect(ui->Speed, &QSlider::valueChanged, this, &MainWindow::on_Speed_valueChanged);
-    }
 
     m_left.clear();
     m_right.clear();
@@ -106,10 +99,10 @@ void MainWindow::setupTable() {
     }
 
     // 3. Настраиваем новую таблицу
-    int newCols = unique.size() + 1; // +1 для столбца "Состояние"
+    int newCols = unique.size() + 1;
     ui->tableProgram->setColumnCount(newCols);
-    ui->tableProgram->verticalHeader()->setDefaultSectionSize(35);   // высота строк
-    ui->tableProgram->horizontalHeader()->setDefaultSectionSize(100); // ширина столбцов
+    ui->tableProgram->verticalHeader()->setDefaultSectionSize(50);
+    ui->tableProgram->horizontalHeader()->setDefaultSectionSize(200);
 
     QStringList headers;
     headers << "Состояние";
@@ -151,8 +144,8 @@ void MainWindow::setupTable() {
     }
 
     // 6. Настройки внешнего вида таблицы
-    ui->tableProgram->verticalHeader()->setDefaultSectionSize(30); // высота строк 30 пикселей
-    ui->tableProgram->horizontalHeader()->setDefaultSectionSize(100); // ширина столбцов 100
+    ui->tableProgram->verticalHeader()->setDefaultSectionSize(50);
+    ui->tableProgram->horizontalHeader()->setDefaultSectionSize(200);
 
     ui->tableProgram->resizeColumnsToContents();   // чтобы содержимое было видно
     ui->tableProgram->resizeRowsToContents();
@@ -164,7 +157,6 @@ void MainWindow::setupTable() {
 
 void MainWindow::updateTapeDisplay(const QString &inputString) {
     m_initialString = inputString;
-    // Проверка символов
     for (QChar ch : std::as_const(inputString)) {
         if (!m_alphabet.contains(ch)) {
             QMessageBox::warning(this, "Ошибка", "Символ '" + QString(ch) + "' не входит в алфавит");
@@ -179,29 +171,28 @@ void MainWindow::updateTapeDisplay(const QString &inputString) {
     // Добавляем запас пустых символов справа (для движения)
     for (int i = 0; i < 5; ++i)
         m_right.append("Λ");
-    // Головка в начале (m_left пуст, m_right[0] – первый символ строки)
-    tapeWidget->setTape(m_left, m_right, m_left.size());
+    m_headPos = 0;
+    tapeWidget->setTape(m_left, m_right, m_headPos);
 }
 
 void MainWindow::moveLeft() {
-    if (!m_left.isEmpty()) {
-        m_right.prepend(m_left.last());
-        m_left.removeLast();
-    } else {
-        m_right.prepend("Λ");
+    m_headPos--;
+    // Если вышли за границу m_left, расширяем влево
+    if (m_headPos < -m_left.size()) {
+        m_left.prepend("Λ");   // новый символ на позиции m_headPos (самая левая)
     }
-    tapeWidget->setTape(m_left, m_right, m_left.size());
+    tapeWidget->setTape(m_left, m_right, m_headPos);
 }
 
 void MainWindow::moveRight() {
-    if (m_right.isEmpty()) return;
-    // переносим текущий символ в левую часть
-    m_left.append(m_right[0]);
-    m_right.removeFirst();
-    if (m_right.isEmpty())
+    m_headPos++;
+    // Если вышли за границу m_right, расширяем вправо
+    if (m_headPos >= m_right.size()) {
         m_right.append("Λ");
-    tapeWidget->setTape(m_left, m_right, m_left.size());
+    }
+    tapeWidget->setTape(m_left, m_right, m_headPos);
 }
+
 
 void MainWindow::loadProgramFromTable() {
     m_program.clear();
@@ -233,16 +224,16 @@ void MainWindow::loadProgramFromTable() {
             QString direction = parts[1].trimmed().toUpper();
             QString nextState = parts[2].trimmed();
 
-            // Проверка: writeSymbol должен быть в алфавите или быть "Λ"
-            if (!m_alphabet.contains(writeSymbol) && writeSymbol != "Λ") {
-                cmdItem->setBackground(Qt::red);
+            if (!m_alphabet.contains(writeSymbol) && writeSymbol != "Λ" &&
+                                               !m_extraAlphabet.contains(writeSymbol)) {
+                cmdItem->setBackground(QColor(255, 155, 255));
                 continue;
             }
             if (direction != "L" && direction != "R") {
                 cmdItem->setBackground(Qt::red);
                 continue;
             }
-            // Проверка существования следующего состояния
+
             bool stateExists = false;
             for (int i = 0; i < rows; ++i) {
                 QTableWidgetItem *item = ui->tableProgram->item(i, 0);
@@ -251,11 +242,10 @@ void MainWindow::loadProgramFromTable() {
                     break;
                 }
             }
-            if (!stateExists && nextState != "!") { // "!" – терминальное состояние
+            if (!stateExists && nextState != "!") {
                 cmdItem->setBackground(Qt::red);
                 continue;
             }
-            // Всё хорошо
             cmdItem->setBackground(Qt::white);
             m_program[state][readSymbol] = {writeSymbol, direction, nextState};
         }
@@ -301,13 +291,27 @@ void MainWindow::highlightCurrentState() {
 }
 
 void MainWindow::writeSymbol(const QString &sym) {
-    if (!m_right.isEmpty())
-        m_right[0] = sym;
-    tapeWidget->setTape(m_left, m_right, m_left.size());
+    if (m_headPos >= 0) {
+        m_right[m_headPos] = sym;
+    } else {
+        int idx = -m_headPos - 1;
+        if (idx < m_left.size()) {
+            m_left[idx] = sym;
+        } else {
+            // На всякий случай (не должно случиться, т.к. мы расширяем при moveLeft)
+            m_left.append(sym);
+        }
+    }
+    tapeWidget->setTape(m_left, m_right, m_headPos);
 }
 
 QString MainWindow::readSymbol() const {
-    return m_right.isEmpty() ? "Λ" : m_right[0];
+    if (m_headPos >= 0) {
+        return (m_headPos < m_right.size()) ? m_right[m_headPos] : "Λ";
+    } else {
+        int idx = -m_headPos - 1;
+        return (idx < m_left.size()) ? m_left[idx] : "Λ";
+    }
 }
 
 // Слоты
@@ -396,9 +400,7 @@ void MainWindow::on_btnInsertEmpty_clicked() {
     if (!item || item->column() == 0) return;
     QString old = item->text();
     item->setText(old + "Λ");
-    // Устанавливаем фокус на ячейку
     ui->tableProgram->setCurrentItem(item);
-    // Если нужно поставить курсор в конец, можно запустить таймером:
     QTimer::singleShot(10, [this, item]() {
         ui->tableProgram->editItem(item);
     });

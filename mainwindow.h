@@ -44,18 +44,20 @@ private:
     TapeWidget *tapeWidget;
     QString m_alphabet;
     QString m_extraAlphabet;
-    // Два вектора для ленты
+
     QVector<QString> m_left;
     QVector<QString> m_right;
+     int m_headPos;
+
     // Программа
     QMap<QString, QMap<QString, Transition>> m_program;
     QString m_currentState;
     QTimer *m_timer;
-    int m_delayMs;   // задержка в миллисекундах
+    int m_delayMs;
 
     void setupTable();
     void updateTapeDisplay(const QString &inputString);
-    void loadProgramFromTable();         // загружает правила из таблицы
+    void loadProgramFromTable();
     void step();                         // один шаг машины
     void stopAndReset();                 // остановка таймера и сброс флагов
     void highlightCurrentState();        // подсветка строки состояния в таблице
