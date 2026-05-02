@@ -36,7 +36,6 @@ private slots:
     void on_btnAddState_clicked();
     void on_btnRemoveState_clicked();
     void on_Speed_valueChanged(int value);
-    void on_tableProgram_cellChanged(int row, int column);
     void on_btnInsertEmpty_clicked();
 
 private:
@@ -47,7 +46,10 @@ private:
 
     QVector<QString> m_left;
     QVector<QString> m_right;
-     int m_headPos;
+     int m_headPos = 0;
+
+     bool m_tableHasErrors = false;
+     QStringList m_lastErrors;
 
     // Программа
     QMap<QString, QMap<QString, Transition>> m_program;

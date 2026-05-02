@@ -1238,12 +1238,8 @@ debug\gettingalphabet.obj: ..\..\gettingalphabet.cpp ..\..\gettingalphabet.h \
 		C:\QT\6.10.1\msvc2022_64\include\QtGui\qguiapplication_platform.h \
 		ui_gettingalphabet.h \
 		C:\QT\6.10.1\msvc2022_64\include\QtCore\QVariant \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\QAbstractButton \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qabstractbutton.h \
 		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\QApplication \
 		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qapplication.h \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\QDialogButtonBox \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qdialogbuttonbox.h \
 		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\QLabel \
 		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qlabel.h \
 		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qframe.h \
@@ -1256,7 +1252,11 @@ debug\gettingalphabet.obj: ..\..\gettingalphabet.cpp ..\..\gettingalphabet.h \
 		C:\QT\6.10.1\msvc2022_64\include\QtGui\qpen.h \
 		C:\QT\6.10.1\msvc2022_64\include\QtGui\qtextoption.h \
 		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\QPushButton \
-		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qpushbutton.h
+		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qpushbutton.h \
+		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qabstractbutton.h \
+		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\QMessageBox \
+		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qmessagebox.h \
+		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\qdialogbuttonbox.h
 
 debug\main.obj: ..\..\main.cpp ..\..\gettingalphabet.h \
 		C:\QT\6.10.1\msvc2022_64\include\QtWidgets\QDialog \

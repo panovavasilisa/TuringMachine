@@ -21,11 +21,14 @@ void TapeWidget::scrollToMakeHeadVisible() {
     int headAbsPos = m_left.size() + m_headPos;
     int visibleCells = width() / m_cellSize;
     if (visibleCells <= 0) visibleCells = 1;
-    if (headAbsPos < m_offset)
-        m_offset = headAbsPos;
-    else if (headAbsPos >= m_offset + visibleCells)
+
+    if (headAbsPos < m_offset) {
         m_offset = headAbsPos - visibleCells / 3;
+    } else if (headAbsPos >= m_offset + visibleCells) {
+        m_offset = headAbsPos - visibleCells / 3;
+    }
     m_offset = std::max(0, std::min(m_offset, fullSize - visibleCells));
+    if (m_offset < 0) m_offset = 0;
 }
 
 void TapeWidget::paintEvent(QPaintEvent *) {

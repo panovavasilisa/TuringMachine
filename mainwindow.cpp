@@ -21,14 +21,13 @@ MainWindow::MainWindow(const QString &alphabet, const QString &extraAlphabet, QW
         ui->Speed->setValue(m_delayMs);
         connect(ui->Speed, &QSlider::valueChanged, this, &MainWindow::on_Speed_valueChanged);
     }
-    connect(ui->tableProgram, &QTableWidget::cellChanged, this, &MainWindow::on_tableProgram_cellChanged);
 
 
     tapeWidget = ui->tapeWidget;
 
     setupTable();
-
     m_currentState = "q0";
+    highlightCurrentState();
 
     m_left.clear();
     m_right.clear();
@@ -40,24 +39,9 @@ MainWindow::MainWindow(const QString &alphabet, const QString &extraAlphabet, QW
     ui->tableProgram->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->tableProgram->setStyleSheet(
         "QTableWidget { background-color: white; }"
-        "QTableWidget::item { background-color: white; }"
-        "QTableWidget::item:selected { background-color: white; }"
-        "QTableWidget::item:hover { background-color: white; }"
         "QHeaderView::section { background-color: white; }"
         );
-    QPalette pal = ui->tableProgram->palette();
-    pal.setColor(QPalette::Base, Qt::white);
-    pal.setColor(QPalette::AlternateBase, Qt::white);
-    pal.setColor(QPalette::Highlight, Qt::white);
-    ui->tableProgram->setPalette(pal);
 
-    ui->tableProgram->setStyleSheet(
-        "QTableWidget { background-color: white; }"
-        "QTableWidget::item { background-color: white; color: black; }"
-        "QTableWidget::item:selected { background-color: #d0d0d0; color: black; }"
-        "QTableWidget::item:hover { background-color: #f0f0f0; }"
-        "QHeaderView::section { background-color: white; }"
-        );
 
     // Иконки на кнопках
     ui->btnRun->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
@@ -68,6 +52,7 @@ MainWindow::MainWindow(const QString &alphabet, const QString &extraAlphabet, QW
     ui->btnStop->setIconSize(QSize(24,24));
     ui->btnStep->setIconSize(QSize(24,24));
     ui->btnReset->setIconSize(QSize(24,24));
+    //highlightCurrentState();
 }
 
 MainWindow::~MainWindow() {
@@ -109,7 +94,7 @@ void MainWindow::setupTable() {
     for (QChar ch : std::as_const(unique)) headers << QString(ch);
     ui->tableProgram->setHorizontalHeaderLabels(headers);
 
-    // 4. Определяем количество строк (минимум 1)
+    // 4. Определяем количество строк
     int newRows = qMax(1, oldRows);
     ui->tableProgram->setRowCount(newRows);
 
@@ -150,9 +135,8 @@ void MainWindow::setupTable() {
     ui->tableProgram->resizeColumnsToContents();   // чтобы содержимое было видно
     ui->tableProgram->resizeRowsToContents();
     ui->tableProgram->setWordWrap(true);           // перенос длинных команд
-    //ui->tableProgram->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
+    ui->tableProgram->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
     ui->tableProgram->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-
 }
 
 void MainWindow::updateTapeDisplay(const QString &inputString) {
@@ -165,10 +149,9 @@ void MainWindow::updateTapeDisplay(const QString &inputString) {
     }
     m_left.clear();
     m_right.clear();
-    // Заполняем правую часть: входная строка
     for (QChar ch : std::as_const(inputString))
         m_right.append(QString(ch));
-    // Добавляем запас пустых символов справа (для движения)
+    //запас пустых символов
     for (int i = 0; i < 5; ++i)
         m_right.append("Λ");
     m_headPos = 0;
@@ -177,27 +160,33 @@ void MainWindow::updateTapeDisplay(const QString &inputString) {
 
 void MainWindow::moveLeft() {
     m_headPos--;
-    // Если вышли за границу m_left, расширяем влево
     if (m_headPos < -m_left.size()) {
-        m_left.prepend("Λ");   // новый символ на позиции m_headPos (самая левая)
+        m_left.prepend("Λ");
     }
     tapeWidget->setTape(m_left, m_right, m_headPos);
 }
 
 void MainWindow::moveRight() {
     m_headPos++;
-    // Если вышли за границу m_right, расширяем вправо
     if (m_headPos >= m_right.size()) {
         m_right.append("Λ");
     }
     tapeWidget->setTape(m_left, m_right, m_headPos);
 }
 
-
 void MainWindow::loadProgramFromTable() {
     m_program.clear();
+    m_tableHasErrors = false;
+    m_lastErrors.clear();
+
+    if (!ui || !ui->tableProgram) return;
+
     int rows = ui->tableProgram->rowCount();
     int cols = ui->tableProgram->columnCount();
+    if (rows <= 0 || cols <= 0) return;
+
+    int firstErrorRow = -1, firstErrorCol = -1;
+
     for (int r = 0; r < rows; ++r) {
         QTableWidgetItem *stateItem = ui->tableProgram->item(r, 0);
         if (!stateItem) continue;
@@ -207,50 +196,101 @@ void MainWindow::loadProgramFromTable() {
         for (int c = 1; c < cols; ++c) {
             QTableWidgetItem *headerItem = ui->tableProgram->horizontalHeaderItem(c);
             if (!headerItem) continue;
-            QString readSymbol = headerItem->text().trimmed(); // символ, который видит головка
+            QString readSymbol = headerItem->text().trimmed();
+            if (readSymbol.isEmpty()) continue;
 
             QTableWidgetItem *cmdItem = ui->tableProgram->item(r, c);
             if (!cmdItem) continue;
             QString cmd = cmdItem->text().trimmed();
-            if (cmd.isEmpty()) continue;
 
-            // Разбор команды: write, direction, nextState
+            // Пустые ячейки – не ошибка
+            if (cmd.isEmpty()) {
+                cmdItem->setBackground(Qt::white);
+                continue;
+            }
+
+            // Сброс фона
+            cmdItem->setBackground(Qt::white);
+
+            // 1. Проверка формата
             QStringList parts = cmd.split(',');
             if (parts.size() != 3) {
                 cmdItem->setBackground(Qt::red);
+                m_lastErrors << QString("Строка %1, столбец %2: не хватает запятых (нужно 2 запятые)").arg(r+1).arg(c+1);
+                m_tableHasErrors = true;
+                if (firstErrorRow == -1) { firstErrorRow = r; firstErrorCol = c; }
                 continue;
             }
+
             QString writeSymbol = parts[0].trimmed();
             QString direction = parts[1].trimmed().toUpper();
             QString nextState = parts[2].trimmed();
 
-            if (!m_alphabet.contains(writeSymbol) && writeSymbol != "Λ" &&
-                                               !m_extraAlphabet.contains(writeSymbol)) {
-                cmdItem->setBackground(QColor(255, 155, 255));
-                continue;
-            }
-            if (direction != "L" && direction != "R") {
-                cmdItem->setBackground(Qt::red);
-                continue;
-            }
+            bool cellError = false;
 
-            bool stateExists = false;
-            for (int i = 0; i < rows; ++i) {
-                QTableWidgetItem *item = ui->tableProgram->item(i, 0);
-                if (item && item->text().trimmed() == nextState) {
-                    stateExists = true;
-                    break;
+            // 2. Проверка writeSymbol (если не пусто)
+            if (!writeSymbol.isEmpty()) {
+                if (!m_alphabet.contains(writeSymbol) && writeSymbol != "Λ" && !m_extraAlphabet.contains(writeSymbol)) {
+                    cmdItem->setBackground(Qt::red);
+                    m_lastErrors << QString("Строка %1, столбец %2: символ '%3' не входит в алфавит").arg(r+1).arg(c+1).arg(writeSymbol);
+                    m_tableHasErrors = true;
+                    cellError = true;
+                    if (firstErrorRow == -1) { firstErrorRow = r; firstErrorCol = c; }
                 }
             }
-            if (!stateExists && nextState != "!") {
-                cmdItem->setBackground(Qt::red);
-                continue;
+
+            // 3. Проверка direction (если не пусто и ещё нет ошибки в этой ячейке)
+            if (!direction.isEmpty() && !cellError) {
+                if (direction != "L" && direction != "R") {
+                    cmdItem->setBackground(Qt::red);
+                    m_lastErrors << QString("Строка %1, столбец %2: направление '%3' должно быть L или R").arg(r+1).arg(c+1).arg(direction);
+                    m_tableHasErrors = true;
+                    cellError = true;
+                    if (firstErrorRow == -1) { firstErrorRow = r; firstErrorCol = c; }
+                }
             }
-            cmdItem->setBackground(Qt::white);
-            m_program[state][readSymbol] = {writeSymbol, direction, nextState};
+
+            // 4. Проверка nextState (если не пусто, не "!" и ещё нет ошибки)
+            if (!nextState.isEmpty() && nextState != "!" && !cellError) {
+                bool stateExists = false;
+                for (int i = 0; i < rows; ++i) {
+                    QTableWidgetItem *item = ui->tableProgram->item(i, 0);
+                    if (item && item->text().trimmed() == nextState) {
+                        stateExists = true;
+                        break;
+                    }
+                }
+                if (!stateExists) {
+                    cmdItem->setBackground(Qt::red);
+                    m_lastErrors << QString("Строка %1, столбец %2: состояние '%3' не существует").arg(r+1).arg(c+1).arg(nextState);
+                    m_tableHasErrors = true;
+                    cellError = true;
+                    if (firstErrorRow == -1) { firstErrorRow = r; firstErrorCol = c; }
+                }
+            }
+
+            // Если ошибок в ячейке нет – добавляем правило
+            if (!cellError) {
+                cmdItem->setBackground(Qt::white);
+                m_program[state][readSymbol] = {writeSymbol, direction, nextState};
+            }
         }
     }
+
+    // Если есть ошибки, выделяем первую неправильную ячейку
+    if (m_tableHasErrors && firstErrorRow != -1 && firstErrorCol != -1) {
+        QTableWidgetItem *firstErrorItem = ui->tableProgram->item(firstErrorRow, firstErrorCol);
+        if (firstErrorItem) {
+            ui->tableProgram->setCurrentItem(firstErrorItem);
+            ui->tableProgram->scrollToItem(firstErrorItem, QAbstractItemView::EnsureVisible);
+        }
+    }
+
+    if (m_tableHasErrors) {
+        qDebug() << "Ошибки в таблице:" << m_lastErrors;
+    }
 }
+
 
 void MainWindow::step() {
     QString currentSymbol = readSymbol();
@@ -261,8 +301,11 @@ void MainWindow::step() {
         return;
     }
     Transition t = m_program[m_currentState][currentSymbol];
-    // Запись символа
-    writeSymbol(t.writeSymbol);
+
+    // Запись символа, только если он указан
+    if (!t.writeSymbol.isEmpty()) {
+        writeSymbol(t.writeSymbol);
+    }
     // Движение
     if (t.move == "L")
         moveLeft();
@@ -274,44 +317,79 @@ void MainWindow::step() {
         QMessageBox::information(this, "Машина Тьюринга", "Программа завершена (!)");
         return;
     }
-    m_currentState = t.nextState;
+    if (!t.nextState.isEmpty()) {
+        m_currentState = t.nextState;
+    }
     highlightCurrentState();
 }
 
+
 void MainWindow::highlightCurrentState() {
-    for (int i = 0; i < ui->tableProgram->rowCount(); ++i) {
-        ui->tableProgram->item(i, 0)->setBackground(Qt::white);
+    for (int r = 0; r < ui->tableProgram->rowCount(); ++r) {
+        for (int c = 0; c < ui->tableProgram->columnCount(); ++c) {
+            QTableWidgetItem *item = ui->tableProgram->item(r, c);
+            if (item) item->setBackground(Qt::white);
+        }
     }
-    for (int i = 0; i < ui->tableProgram->rowCount(); ++i) {
-        if (ui->tableProgram->item(i, 0)->text() == m_currentState) {
-            ui->tableProgram->item(i, 0)->setBackground(QColor(200, 200, 200));
+
+    QString currentSymbol = readSymbol();
+    bool foundState = false;
+
+    for (int r = 0; r < ui->tableProgram->rowCount(); ++r) {
+        QTableWidgetItem *stateItem = ui->tableProgram->item(r, 0);
+        if (stateItem && stateItem->text().trimmed() == m_currentState) {
+            //stateItem->setBackground(QColor(255, 155, 255));
+            foundState = true;
+
+            // Ищем столбец, соответствующий читаемому символу
+            for (int c = 1; c < ui->tableProgram->columnCount(); ++c) {
+                QTableWidgetItem *headerItem = ui->tableProgram->horizontalHeaderItem(c);
+                if (headerItem && headerItem->text().trimmed() == currentSymbol) {
+                    QTableWidgetItem *cellItem = ui->tableProgram->item(r, c);
+                    if (cellItem) {
+                        cellItem->setBackground(QColor(255, 155, 255));
+                    }
+                    break;
+                }
+            }
             break;
         }
     }
+
+    if (!foundState) {
+        qDebug() << "Состояние" << m_currentState << "не найдено в таблице";
+    }
+
+    ui->tableProgram->viewport()->update();
 }
 
 void MainWindow::writeSymbol(const QString &sym) {
+    if (sym.isEmpty()) return; // нечего писать
     if (m_headPos >= 0) {
+        while (m_headPos >= m_right.size()) {
+            m_right.append("Λ");
+        }
         m_right[m_headPos] = sym;
     } else {
         int idx = -m_headPos - 1;
-        if (idx < m_left.size()) {
-            m_left[idx] = sym;
-        } else {
-            // На всякий случай (не должно случиться, т.к. мы расширяем при moveLeft)
-            m_left.append(sym);
+        while (idx >= m_left.size()) {
+            m_left.append("Λ");
         }
+        m_left[idx] = sym;
     }
     tapeWidget->setTape(m_left, m_right, m_headPos);
 }
 
 QString MainWindow::readSymbol() const {
     if (m_headPos >= 0) {
-        return (m_headPos < m_right.size()) ? m_right[m_headPos] : "Λ";
+        if (m_headPos < m_right.size())
+            return m_right[m_headPos];
     } else {
         int idx = -m_headPos - 1;
-        return (idx < m_left.size()) ? m_left[idx] : "Λ";
+        if (idx < m_left.size())
+            return m_left[idx];
     }
+    return "Λ";
 }
 
 // Слоты
@@ -322,6 +400,7 @@ void MainWindow::on_btnSetString_clicked() {
         return;
     }
     updateTapeDisplay(input);
+    highlightCurrentState();
 }
 
 void MainWindow::on_btnChangeAlphabet_clicked() {
@@ -330,19 +409,38 @@ void MainWindow::on_btnChangeAlphabet_clicked() {
         m_alphabet = dialog.getAlphabet();
         m_extraAlphabet = dialog.getExtraAlphabet();
         setupTable();
+        // Проверка существования текущего состояния
+        bool exists = false;
+        for (int i = 0; i < ui->tableProgram->rowCount(); ++i) {
+            if (ui->tableProgram->item(i, 0)->text().trimmed() == m_currentState) {
+                exists = true;
+                break;
+            }
+        }
+        if (!exists) m_currentState = "q0";
+        highlightCurrentState();
         ui->lineEditString->clear();
         m_left.clear();
         m_right.clear();
-        tapeWidget->setTape(m_left, m_right, m_left.size());
+        tapeWidget->setTape(m_left, m_right, 0);
     }
     m_initialString.clear();
 }
 
 void MainWindow::on_btnRun_clicked() {
     if (m_timer->isActive()) return;
-    // Перед запуском перезагружаем программу из таблицы
+
+    if (m_right.isEmpty() && m_left.isEmpty()) {
+        QMessageBox::warning(this, "Ошибка", "Сначала задайте строку (кнопка «Задать строку»)");
+        return;
+    }
+
     loadProgramFromTable();
-    // Проверяем, есть ли вообще правила
+
+    if (m_tableHasErrors) {
+        QMessageBox::warning(this, "Ошибка", "В таблице есть ошибки.\n" + m_lastErrors.join("\n"));
+        return;
+    }
     if (m_program.isEmpty()) {
         QMessageBox::warning(this, "Ошибка", "Нет ни одного правила");
         return;
@@ -357,6 +455,10 @@ void MainWindow::on_btnStop_clicked() {
 void MainWindow::on_btnStep_clicked() {
     if (m_timer->isActive()) return;
     loadProgramFromTable();
+    if (m_tableHasErrors) {
+        QMessageBox::warning(this, "Ошибка", "В таблице есть ошибки.\nИсправьте их перед выполнением шага.");
+        return;
+    }
     step();
 }
 
@@ -389,10 +491,6 @@ void MainWindow::on_Speed_valueChanged(int value) {
     if (m_timer->isActive()) {
         m_timer->setInterval(m_delayMs);
     }
-}
-
-void MainWindow::on_tableProgram_cellChanged(int /*row*/, int /*column*/) {
-    loadProgramFromTable();
 }
 
 void MainWindow::on_btnInsertEmpty_clicked() {

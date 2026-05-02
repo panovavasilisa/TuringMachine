@@ -19,7 +19,7 @@ private:
     QVector<QString> m_right;
     int m_headPos;
     int m_cellSize;
-    int m_offset;
+    int m_offset; //смещ
     void scrollToMakeHeadVisible();
 };
 

@@ -10,10 +10,8 @@
 #define UI_GETTINGALPHABET_H
 
 #include <QtCore/QVariant>
-#include <QtWidgets/QAbstractButton>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QDialog>
-#include <QtWidgets/QDialogButtonBox>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QPushButton>
@@ -23,7 +21,6 @@ QT_BEGIN_NAMESPACE
 class Ui_GettingAlphabet
 {
 public:
-    QDialogButtonBox *buttonBox;
     QPushButton *btnSetAlphabet;
     QLineEdit *lineEditAlphabet;
     QLineEdit *lineEditExtra;
@@ -35,11 +32,6 @@ public:
         if (GettingAlphabet->objectName().isEmpty())
             GettingAlphabet->setObjectName("GettingAlphabet");
         GettingAlphabet->resize(400, 300);
-        buttonBox = new QDialogButtonBox(GettingAlphabet);
-        buttonBox->setObjectName("buttonBox");
-        buttonBox->setGeometry(QRect(30, 240, 341, 32));
-        buttonBox->setOrientation(Qt::Orientation::Horizontal);
-        buttonBox->setStandardButtons(QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok);
         btnSetAlphabet = new QPushButton(GettingAlphabet);
         btnSetAlphabet->setObjectName("btnSetAlphabet");
         btnSetAlphabet->setGeometry(QRect(130, 170, 121, 41));
@@ -57,8 +49,6 @@ public:
         label_2->setGeometry(QRect(220, 70, 131, 31));
 
         retranslateUi(GettingAlphabet);
-        QObject::connect(buttonBox, &QDialogButtonBox::accepted, GettingAlphabet, qOverload<>(&QDialog::accept));
-        QObject::connect(buttonBox, &QDialogButtonBox::rejected, GettingAlphabet, qOverload<>(&QDialog::reject));
 
         QMetaObject::connectSlotsByName(GettingAlphabet);
     } // setupUi
